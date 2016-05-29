@@ -1,0 +1,15 @@
+{
+    "name": "role/lightify-api",
+    "description": "PHP API Wrapper of OSRAMs Lightify REST API",
+    "require": {
+        "guzzlehttp/guzzle": "^6.2"
+    },
+    "license": "GPLv3.0+",
+    "authors": [
+        {
+            "name": "Robin Lehrmann",
+            "email": "robin.lehrmann@developer.nrw"
+        }
+    ],
+    "minimum-stability": "dev"
+}
