@@ -10,11 +10,14 @@ namespace Role\LightifyApi;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use Role\LightifyApi\Exceptions\ErrorException;
 
 class LightifyApi
 {
     const LIGHTIFY_EUROPE = 'https://eu.lightify-api.org/lightify/services';
     const LIGHTIFY_USA = 'https://us.lightify-api.org/lightify/services';
+
+    const RESOURCE_SESSION = 'session';
 
     /**
      * @var Client
@@ -25,6 +28,11 @@ class LightifyApi
      * @var string
      */
     private $url;
+
+    /**
+     * @var integer
+     */
+    private $userId;
 
     /**
      * @var string
@@ -40,6 +48,11 @@ class LightifyApi
      * @var string
      */
     private $serialNumber;
+
+    /**
+     * @var string
+     */
+    private $securityToken;
 
     /**
      * @var boolean
@@ -69,22 +82,44 @@ class LightifyApi
      * @param array $data
      * @param string $requestMethod
      *
+     * @throws ErrorException
+     *
      * @return mixed|\Psr\Http\Message\ResponseInterface
      */
-    public function doRequest($resource, $data, $requestMethod = 'GET')
+    public function doRequest($resource, $data = [], $requestMethod = 'GET')
     {
-        return $this->client->send(
+        if (!$this->authenticated && $resource !== self::RESOURCE_SESSION) {
+            $this->authenticate();
+        }
+
+        $response = $this->client->send(
             new Request(
                 $requestMethod,
                 $this->url . '/' . $resource,
-                ['Content-Type' => 'application/json'],
+                [
+                    'Content-Type' => 'application/json',
+                    'authorization' => $this->securityToken
+                ],
                 $data
             )
         );
+
+        if ((int) substr($response->getStatusCode(), 0, 1) === 4) {
+            throw new ErrorException($response['errorMessage'], $response['errorCode']);
+        }
     }
 
     private function authenticate()
     {
+        $response = $this->doRequest(self::RESOURCE_SESSION, [
+            'username' => $this->userName,
+            'password' => $this->password,
+            'serialNumber' => $this->serialNumber
+        ]);
+
+        $this->securityToken = $response['securityToken'];
+        $this->userId = $response['userId'];
+
         $this->authenticated = true;
     }
 }
