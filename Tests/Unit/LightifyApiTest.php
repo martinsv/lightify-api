@@ -22,7 +22,7 @@ class LightifyApiTest extends \PHPUnit_Framework_TestCase
     {
         /** @var Client $client */
         $client = $this
-            ->getMock('Guzzle\\PSR7\\Client', [], [], 'Guzzle\\PSR7\\Client')
+            ->getMock('Guzzle\PSR7\Client', [], [], 'Guzzle\PSR7\Client')
         ;
 
         $this->lightifyApi = new LightifyApi(

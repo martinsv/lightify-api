@@ -15,8 +15,8 @@
         }
     ],
     "autoload": {
-        "classmap": {
-            "Role\\LightifyApi\\Tests\\Unit": "Tests/Unit/"
+        "psr-4": {
+            "Role\\LightifyApi": "/"
         }
     },
     "minimum-stability": "dev"
