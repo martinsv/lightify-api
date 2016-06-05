@@ -6,7 +6,7 @@
  * Time: 23:39
  */
 
-namespace Role\LightifyApi\Tests;
+namespace Role\LightifyApi\Tests\Unit;
 
 use GuzzleHttp\Client;
 use Role\LightifyApi\LightifyApi;

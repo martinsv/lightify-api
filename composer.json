@@ -16,7 +16,7 @@
     ],
     "autoload": {
         "classmap": {
-            "Role\\LightifyApi\\Tests\\LightifyApiTest": "Tests/Unit/LightifyApiTest"
+            "Role\\LightifyApi\\Tests\\Unit": "Tests/Unit/"
         }
     },
     "minimum-stability": "dev"
