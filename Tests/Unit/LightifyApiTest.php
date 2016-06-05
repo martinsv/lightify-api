@@ -9,6 +9,8 @@
 namespace Role\LightifyApi\Tests\Unit;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use Role\LightifyApi\LightifyApi;
 
 class LightifyApiTest extends \PHPUnit_Framework_TestCase
@@ -20,10 +22,24 @@ class LightifyApiTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        /** @var Client $client */
         $client = $this
-            ->getMock('Guzzle\PSR7\Client', [], [], 'Guzzle\PSR7\Client')
+            ->getMock(Client::class)
         ;
+
+        $request = $this->getMock(Request::class, [], [], Request::class, false);
+        $response = $this->getMock(Response::class);
+
+        $client->expects($this->exactly(1))
+            ->method('send')
+            ->will($this->returnCallback(function () use ($response) {
+                return $response;
+            }));
+        
+        $client->expects($this->exactly(1))
+            ->method('request')
+            ->will($this->returnCallback(function () use ($request) {
+                return $request;
+            }));
 
         $this->lightifyApi = new LightifyApi(
             $client,
@@ -36,6 +52,10 @@ class LightifyApiTest extends \PHPUnit_Framework_TestCase
 
     public function testAuthentication()
     {
-
+        $this->lightifyApi->doRequest(LightifyApi::RESOURCE_SESSION, [
+            'username' => 'test',
+            'password' => 'test123',
+            'serialNumber' => '123abc'
+        ]);
     }
 }
