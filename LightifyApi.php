@@ -263,6 +263,57 @@ class LightifyApi
     }
 
     /**
+     * @param integer $deviceId
+     * @param float   $level
+     * @param integer $time
+     *
+     * @return mixed
+     *
+     * @throws ErrorException
+     */
+    public function dimDevice($deviceId, $level, $time = 0)
+    {
+        $response = $this->doRequest(
+            $this->generateSingleOperation(
+                self::RESOURCE_DEVICE_SET,
+                $deviceId,
+                [
+                    'time' => $time,
+                    'onoff' => 1,
+                    'level' => $level
+                ]
+            )
+        );
+
+        return $response;
+    }
+
+    /**
+     * @param integer $deviceId
+     * @param integer $cTemp
+     * @param integer $time
+     *
+     * @return mixed
+     *
+     * @throws ErrorException
+     */
+    public function changeTemperature($deviceId, $cTemp, $time = 0)
+    {
+        $response = $this->doRequest(
+            $this->generateSingleOperation(
+                self::RESOURCE_DEVICE_SET,
+                $deviceId,
+                [
+                    'time'  => $time,
+                    'ctemp' => $cTemp
+                ]
+            )
+        );
+
+        return $response;
+    }
+
+    /**
      * @param string  $resource
      * @param integer $idx
      * @param array   $parameters
