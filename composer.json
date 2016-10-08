@@ -2,7 +2,8 @@
     "name": "role/lightify-api",
     "description": "PHP API Wrapper of OSRAMs Lightify REST API",
     "require": {
-        "guzzlehttp/guzzle": "^6.2"
+        "guzzlehttp/guzzle": "^6.2",
+        "role/smart-lights": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "5.3.*"

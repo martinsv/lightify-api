@@ -31,64 +31,54 @@
  *   Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>
  */
 
-namespace Role\LightifyApi\Manager;
+namespace Role\LightifyApi\Authentication;
 
 use Role\LightifyApi\LightifyApi;
 
-/**
- * Created by PhpStorm.
- * User: robin
- * Date: 06.06.16
- * Time: 19:26
- */
-interface ManagerInterface
+class TokenFactory implements \Role\SmartLights\Authentication\TokenFactory
 {
     /**
-     * ManagerInterface constructor.
-     *
-     * @param LightifyApi $api
+     * @var LightifyApi
      */
-    public function __construct(LightifyApi $api);
+    private $lightifyApi;
 
     /**
-     * @return array
+     * @var string
      */
-    public function getList();
+    private $username;
 
     /**
-     * @param integer $idx
-     * @param boolean $on
-     * @param integer $time
-     * @param integer $level
-     *
-     * @return mixed
+     * @var string
      */
-    public function toggle($idx, $on, $time = 0, $level = 1);
+    private $password;
 
     /**
-     * @param integer $idx
-     * @param string  $color
-     * @param integer $time
-     *
-     * @return mixed
+     * @var string
      */
-    public function switchColor($idx, $color, $time = 0);
+    private $serialNumber;
 
     /**
-     * @param integer $idx
-     * @param string  $level
-     * @param integer $time
-     *
-     * @return mixed
+     * @param LightifyApi $lightifyApi
+     * @param string $username
+     * @param string $password
+     * @param string $serialNumber
      */
-    public function dim($idx, $level, $time = 0);
+    public function __construct(LightifyApi $lightifyApi, $username, $password, $serialNumber)
+    {
+        $this->lightifyApi = $lightifyApi;
+    }
 
     /**
-     * @param integer $idx
-     * @param integer $temperature
-     * @param integer $time
-     *
-     * @return mixed
+     * @return SecurityToken
      */
-    public function switchTemperature($idx, $temperature, $time = 0);
+    public function generateToken()
+    {
+        $response = $this->lightifyApi->doRequest(LightifyApi::RESOURCE_SESSION, [
+            'username' => $this->username,
+            'password' => $this->password,
+            'serialNumber' => $this->serialNumber
+        ], 'POST');
+
+        return new SecurityToken($response['securityToken'], $response['userId']);
+    }
 }

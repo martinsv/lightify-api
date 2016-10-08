@@ -31,64 +31,41 @@
  *   Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>
  */
 
-namespace Role\LightifyApi\Manager;
+namespace Role\LightifyApi\Authentication;
 
-use Role\LightifyApi\LightifyApi;
+use Role\SmartLights\Authentication\SessionInterface;
 
-/**
- * Created by PhpStorm.
- * User: robin
- * Date: 06.06.16
- * Time: 19:26
- */
-interface ManagerInterface
+class SecurityToken implements SessionInterface
 {
     /**
-     * ManagerInterface constructor.
-     *
-     * @param LightifyApi $api
+     * @var string
      */
-    public function __construct(LightifyApi $api);
+    private $securityToken;
 
     /**
-     * @return array
+     * @var string
      */
-    public function getList();
+    private $userId;
+
+    public function __construct($securityToken, $userId)
+    {
+        $this->securityToken = $securityToken;
+        $this->userId = $userId;
+    }
 
     /**
-     * @param integer $idx
-     * @param boolean $on
-     * @param integer $time
-     * @param integer $level
-     *
-     * @return mixed
+     * @inheritDoc
      */
-    public function toggle($idx, $on, $time = 0, $level = 1);
+    public function isAuthenticated()
+    {
+        return !is_null($this->securityToken);
+    }
 
     /**
-     * @param integer $idx
-     * @param string  $color
-     * @param integer $time
-     *
-     * @return mixed
+     * @return string
      */
-    public function switchColor($idx, $color, $time = 0);
-
-    /**
-     * @param integer $idx
-     * @param string  $level
-     * @param integer $time
-     *
-     * @return mixed
-     */
-    public function dim($idx, $level, $time = 0);
-
-    /**
-     * @param integer $idx
-     * @param integer $temperature
-     * @param integer $time
-     *
-     * @return mixed
-     */
-    public function switchTemperature($idx, $temperature, $time = 0);
+    public function __toString()
+    {
+        return $this->securityToken;
+    }
 }

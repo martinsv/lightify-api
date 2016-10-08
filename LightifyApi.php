@@ -39,51 +39,25 @@ class LightifyApi
     private $url;
 
     /**
-     * @var integer
-     */
-    private $userId;
-
-    /**
-     * @var string
-     */
-    private $userName;
-
-    /**
-     * @var string
-     */
-    private $password;
-
-    /**
-     * @var string
-     */
-    private $serialNumber;
-
-    /**
      * @var string
      */
     private $securityToken;
-
-    /**
-     * @var boolean
-     */
-    private $authenticated;
     
     /**
      * LightifyApi constructor.
      *
      * @param Client $client
      * @param string $url
-     * @param string $userName
-     * @param string $password
-     * @param string $serialNumber
      */
-    public function __construct(Client $client, $url, $userName, $password, $serialNumber)
+    public function __construct(Client $client, $url)
     {
         $this->client = $client;
-        $this->userName = $userName;
-        $this->password = $password;
-        $this->serialNumber = $serialNumber;
-        $this->url = $url;
+
+        if (strtoupper($url) === 'EU') {
+            $this->url = self::LIGHTIFY_EUROPE;
+        } elseif ($url === 'US') {
+            $this->url = self::LIGHTIFY_USA;
+        }
     }
 
     /**
@@ -97,14 +71,10 @@ class LightifyApi
      */
     public function doRequest($resource, $data = [], $requestMethod = 'GET')
     {
-        if (!$this->authenticated && $resource !== self::RESOURCE_SESSION) {
-            $this->authenticate();
-        }
-
         $headers = ['Content-Type' => 'application/json'];
 
-        if ($resource !== self::RESOURCE_SESSION) {
-            $headers['authorization'] = $this->securityToken;
+        if ($this->securityToken) {
+            $headers['authorization'] = (string) $this->securityToken;
         }
 
         $response = $this->client->send(
@@ -250,22 +220,5 @@ class LightifyApi
         }
 
         return $resource . $parametersUri;
-    }
-
-    /**
-     * @throws ErrorException
-     */
-    public function authenticate()
-    {
-        $response = $this->doRequest(self::RESOURCE_SESSION, [
-            'username' => $this->userName,
-            'password' => $this->password,
-            'serialNumber' => $this->serialNumber
-        ], 'POST');
-
-        $this->securityToken = $response['securityToken'];
-        $this->userId = $response['userId'];
-
-        $this->authenticated = true;
     }
 }
